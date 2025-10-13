@@ -28,9 +28,10 @@ const App: React.FC = () => {
 
     try {
       // ✅ Updated endpoint to match backend
-      const response = await axios.post("https://YOUR-BACKEND-URL.onrender.com/api/process", formData, {
+      const response = await axios.post("https://cbt-extractor.onrender.com/api/process", formData, {
       headers: { "Content-Type": "multipart/form-data" },
-    });
+      });
+
 
 
 
