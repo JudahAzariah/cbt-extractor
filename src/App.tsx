@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { Download } from "lucide-react";
 import QuestionUploader from "./components/QuestionUploader";
 
 interface QuestionData {
@@ -27,37 +26,29 @@ const App: React.FC = () => {
     formData.append("answerImage", answerFile);
 
     try {
-      // ✅ Updated endpoint to match backend
-      const response = await axios.post("https://cbt-extractor.onrender.com/api/process", formData, {
-      headers: { "Content-Type": "multipart/form-data" },
-      });
+      const response = await axios.post(
+        "https://cbt-extractor.onrender.com/api/process",
+        formData,
+        {
+          responseType: "blob", // ✅ important
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
 
+      // ✅ Download the JSON file directly
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "mcq.json");
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
 
-
-
-      setResult(response.data.data);
     } catch (error) {
       console.error("❌ Error:", error);
       alert("Failed to process images.");
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleDownload = async () => {
-    try {
-      const response = await axios.get("http://localhost:5000/download-json", {
-        responseType: "blob",
-      });
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", "cbt_questions.json");
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-    } catch (error) {
-      console.error("❌ Error downloading JSON:", error);
     }
   };
 
@@ -116,13 +107,6 @@ const App: React.FC = () => {
           <p className="mt-4 text-green-600 font-semibold">
             ✅ Correct Answer: {result.correct_answer}
           </p>
-
-          <button
-            onClick={handleDownload}
-            className="mt-6 flex items-center gap-2 px-5 py-2 rounded-lg bg-gradient-to-r from-indigo-500 to-purple-500 text-white hover:opacity-90 transition-all"
-          >
-            <Download size={18} /> Download JSON
-          </button>
         </div>
       )}
     </div>

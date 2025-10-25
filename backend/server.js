@@ -111,8 +111,10 @@ app.post(
         options,
         correct_answer: extractCorrectAnswer(answerText, options),
       };
-
-      res.json({ data: responseData });
+// ✅ Send JSON as downloadable file
+      res.setHeader("Content-Disposition", "attachment; filename=mcq.json");
+      res.setHeader("Content-Type", "application/json");
+      res.send(JSON.stringify(responseData, null, 2));
 
       // 🧹 Cleanup temporary files
       fs.unlinkSync(questionImage);
